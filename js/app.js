@@ -2,24 +2,24 @@
 
     let app = (function () {
         let canvas = document.getElementById('my-image'),
-            context = canvas.getContext('2d'),
+            context = canvas.getContext('2d');
 
-            public = {};
-
-        public.loadPicture = function () {
-            var imageObj = new Image();
-            imageObj.src = 'images/benidorm.jpg';
+        let loadPicture = function () {
+            let original =  $('#original');
+            let imageObj = new Image();
+            imageObj.src = original.attr('src');
 
             imageObj.onload = function () {
                 context.drawImage(imageObj, 0, 0);
             }
+            original.attr('width',canvas.width ).attr('height',canvas.height )
         };
 
-        public.getImgData = function () {
+        let getImgData = function () {
             return context.getImageData(0, 0, canvas.width, canvas.height);
         };
 
-        public.save = function () {
+        let save = function () {
             let link = window.document.createElement('a'),
                 url = canvas.toDataURL(),
                 filename = 'result.jpg';
@@ -32,103 +32,76 @@
             window.document.body.removeChild(link);
         };
 
-        // Filters
-        public.filters = {};
-
-        public.filters.bw = function () {
-            let imageData = app.getImgData(),
-                pixels = imageData.data,
-                numPixels = imageData.width * imageData.height;
-
-            for (var i = 0; i < numPixels; i++) {
-                var r = pixels[i * 4];
-                var g = pixels[i * 4 + 1];
-                var b = pixels[i * 4 + 2];
-
-                var grey = (r + g + b) / 3;
-
-                pixels[i * 4] = grey;
-                pixels[i * 4 + 1] = grey;
-                pixels[i * 4 + 2] = grey;
-            }
-
-            context.putImageData(imageData, 0, 0);
+        return {
+            loadPicture,
+            save,
+            getImgData
         };
-        public.filters.contrast = function (contrast) {
-            let imageData = app.getImgData(),
-                pixels = imageData.data,
-                numPixels = imageData.width * imageData.height,
-                factor;
-
-            contrast || (contrast = 100); // Default value
-
-            factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
-
-            for (var i = 0; i < numPixels; i++) {
-                var r = pixels[i * 4];
-                var g = pixels[i * 4 + 1];
-                var b = pixels[i * 4 + 2];
-
-                pixels[i * 4] = factor * (r - 128) + 128;
-                pixels[i * 4 + 1] = factor * (g - 128) + 128;
-                pixels[i * 4 + 2] = factor * (b - 128) + 128;
-            }
-
-            context.putImageData(imageData, 0, 0);
-        };
-
-        public.filters.contrast = function (contrast) {
-            let imageData = app.getImgData(),
-                pixels = imageData.data,
-                numPixels = imageData.width * imageData.height,
-                factor;
-
-            contrast || (contrast = 100); // Default value
-
-            factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
-
-            for (var i = 0; i < numPixels; i++) {
-                var r = pixels[i * 4];
-                var g = pixels[i * 4 + 1];
-                var b = pixels[i * 4 + 2];
-
-                pixels[i * 4] = factor * (r - 128) + 128;
-                pixels[i * 4 + 1] = factor * (g - 128) + 128;
-                pixels[i * 4 + 2] = factor * (b - 128) + 128;
-            }
-
-            context.putImageData(imageData, 0, 0);
-        };
-
-        return public;
     }());
 
-    let applyFilter = function () {
-     // app.filters.contrast(selector.value)
-        applyCamman();
-    }
+
 
     let reset = function () {
         window.location.reload()
     }
 
-    let applyCamman = function () {
-        Caman('#my-image', function () {
-            var brightnessInput = $('#myBr')
-            var brightness = brightnessInput.attr('value')
-            var contrastInput = $('#myBr')
-            var contrast = contrastInput.attr('value')
 
-            this.brightness(parseInt(brightness));
-            this.contrast(parseInt(contrast));
-            this.sepia(10);
-            this.saturation(1);
-            this.render();
-        });
+    const applyFilter = function (filter ){
+           Caman("#my-image", function () {
+                   let intensity = parseInt($('#intensity').val());
+                   for (let i =0; i < intensity +1 ; i++) {
+                       golden(this);
+                       curves(this);
+                   }
+           });
+    };
+
+
+    const golden = function (entity) {
+        entity.brightness(5)
+            .contrast(-5)
+            // .saturation(-3)
+            .channels({
+                red: 20,
+                green: 0,
+                blue: 0
+            })
+
+            //  .sepia(60)
+            // falta highlight y  temp
+            .render();
     }
 
 
+    const  curves = function (entity) {
+
+        // Using a string for the channel
+        entity.curves('rgb', [0, -50], [100, 100], [180, 200], [255, 255]);
+
+        // Specifying individual color channels
+        // entity.curves(['r', 'b'], [0, 0], [100, 120], [180, 240], [255, 255]);
+
+        entity.render();
+    };
+
+    const changeImage = function (e){
+        let img = $('.img-thumbnail');
+        let original = $('#original');
+        img.on('click', function (){
+            let src = $(this).attr('src')
+            localStorage.setItem('src', src);
+          //  original.attr('src', src)
+         //   app.loadPicture();
+            reset()
+        })
+    }
+
     $(document).ready(function() {
+        if(localStorage.getItem('src')){
+            let original = $('#original');
+            original.attr('src', localStorage.getItem('src'))
+        }
         app.loadPicture();
+        changeImage();
 
 });
