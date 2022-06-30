@@ -37,9 +37,8 @@
             save,
             getImgData
         };
+
     }());
-
-
 
     let reset = function () {
         window.location.reload()
@@ -47,15 +46,31 @@
 
 
     const applyFilter = function (filter ){
-           Caman("#my-image", function () {
+        applyGradient()
+      /*     Caman("#my-image", function () {
                    let intensity = parseInt($('#intensity').val());
-                   for (let i =0; i < intensity +1 ; i++) {
+                 //  for (let i =0; i < intensity +1 ; i++) {
                        golden(this);
                        curves(this);
-                   }
-           });
+               //    }
+
+           });*/
     };
 
+    const applyGradient = function (){
+        let canvas = document.getElementById('my-image'),
+            context = canvas.getContext('2d');
+        let gradient = context.createLinearGradient(0,0, canvas.width, canvas.height);
+        // Add three color stops
+        gradient.addColorStop(0, '#b6644563');
+        gradient.addColorStop(.5, '#fcc8970f');
+        gradient.addColorStop(.5, '#fcc8970f');
+        gradient.addColorStop(.5, '#fcc8970f');
+
+// Set the fill style and draw a rectangle
+        context.fillStyle = gradient;
+        context.fillRect(0, 0, canvas.width, canvas.height);
+    }
 
     const golden = function (entity) {
         entity.brightness(5)
@@ -103,5 +118,4 @@
         }
         app.loadPicture();
         changeImage();
-
 });
