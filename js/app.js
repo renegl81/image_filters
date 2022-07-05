@@ -45,17 +45,39 @@
     }
 
 
-    const applyFilter = function (filter ){
-        applyGradient()
-      /*     Caman("#my-image", function () {
-                   let intensity = parseInt($('#intensity').val());
-                 //  for (let i =0; i < intensity +1 ; i++) {
-                       golden(this);
-                       curves(this);
-               //    }
+    const applyFilter = function (filter ) {
 
-           });*/
-    };
+        Caman("#my-image", function () {
+        /*   Brillo: 29%
+            Contraste: -19
+            Saturación: 17
+            Canal color #f2d655 al 15% opacidad*/
+            let intensity = parseInt($('#intensity').val());
+            this.newLayer(function () {
+                // Change the blending mode
+                this.setBlendingMode("multiply");
+                // Change the opacity of this layer
+                this.opacity(50);
+
+                // Now we can *either* fill this layer with a
+                // solid color...
+                this.fillColor('#f2d6553d');
+
+                // ... or we can copy the contents of the parent
+                // layer to this one.
+                this.copyParent();
+
+                // Now, we can call any filter function though the
+                // filter object.
+                this.filter.brightness(17);
+               // this.filter.contrast(20);
+            });
+           // this.brightness(19)
+           // this.contrast(-19)
+           // this.saturation(17)
+            this.render();
+        });
+    }
 
     const applyGradient = function (){
         let canvas = document.getElementById('my-image'),
@@ -73,18 +95,18 @@
     }
 
     const golden = function (entity) {
-        entity.brightness(5)
-            .contrast(-5)
-            // .saturation(-3)
+     /*   entity.brightness(5)
+            .contrast(-19)
+            .saturation(17)
             .channels({
                 red: 20,
                 green: 0,
                 blue: 0
-            })
+            })*/
 
             //  .sepia(60)
             // falta highlight y  temp
-            .render();
+         //   .render();
     }
 
 
