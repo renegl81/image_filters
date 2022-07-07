@@ -69,12 +69,10 @@
 
                 // Now, we can call any filter function though the
                 // filter object.
-                this.filter.brightness(17);
-               // this.filter.contrast(20);
+                this.filter.brightness(10);
             });
-           // this.brightness(19)
-           // this.contrast(-19)
-           // this.saturation(17)
+            this.contrast(0)
+           this.saturation(10)
             this.render();
         });
     }
